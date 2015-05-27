@@ -17,7 +17,8 @@ console.log(JSON.stringify(generatePerson(generations), null, 2));
 
 function generatePerson(generations){
   var person = {
-    name: chance.name()
+    name: chance.name(),
+    id: chance.guid()
   };
   if(generations > 0){
     person.parents = [];

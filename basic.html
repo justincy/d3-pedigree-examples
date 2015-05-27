@@ -57,6 +57,8 @@ var tree = d3.layout.tree()
   .separation(function(){
     return .5;
   })
+  // Tell d3 what the child nodes are. Remember, we're drawing
+  // a tree so the ancestors are child nodes.
   .children(function(person){
     return person.parents;
   });
@@ -78,7 +80,7 @@ d3.json('4gens.json', function(error, json){
       .attr("d", elbow);
 
   // Style nodes    
-  var node = svg.selectAll("g.node")
+  var node = svg.selectAll("g.person")
       .data(nodes)
     .enter().append("g")
       .attr("class", "person")
