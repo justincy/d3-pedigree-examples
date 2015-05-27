@@ -1,0 +1,19 @@
+{
+  "name": "d3-pedigree-examples",
+  "version": "1.0.0",
+  "description": "Examples of how to create family pedigrees with D3.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/justincy/d3-pedigree-examples.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/justincy/d3-pedigree-examples/issues"
+  },
+  "homepage": "https://github.com/justincy/d3-pedigree-examples",
+  "devDependencies": {
+    "chance": "0.7.5",
+    "minimist": "1.1.1"
+  }
+}

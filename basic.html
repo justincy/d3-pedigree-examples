@@ -9,7 +9,7 @@
 }
 
 .person {
-  font: 18px sans-serif;
+  font: 14px sans-serif;
 }
 
 .link {
@@ -22,6 +22,9 @@
 <body>
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script>
+
+var boxWidth = 150,
+    boxHeight = 40;
 
 // Setup zoom and pan
 var zoom = d3.behavior.zoom()
@@ -47,14 +50,17 @@ var tree = d3.layout.tree()
   // the size parameter instead then d3 would
   // calculate the separation dynamically to fill
   // the available space.
-  .nodeSize([100, 300])
+  .nodeSize([100, 200])
   // By default, cousins are drawn further apart than siblings.
   // By returning 1 below we draw cousins the same distance apart as siblings.
   .separation(function(){
-    return 1;
+    return .5;
+  })
+  .children(function(person){
+    return person.parents;
   });
 
-d3.json('family.json', function(error, json){
+d3.json('4gens.json', function(error, json){
   
   if(error) {
     return console.error(error);
@@ -80,15 +86,15 @@ d3.json('family.json', function(error, json){
   // Draw the rectangle person boxes
   node.append("rect")
       .attr({
-        x: -100,
-        y: -25,
-        width: 200,
-        height: 50
+        x: -(boxWidth/2),
+        y: -(boxHeight/2),
+        width: boxWidth,
+        height: boxHeight
       });
 
   // Draw the person's name and position it inside the box
   node.append("text")
-      .attr("dx", -90)
+      .attr("dx", -(boxWidth/2) + 10)
       .attr("dy", 0)
       .attr("text-anchor", "start")
       .attr('class', 'name')
