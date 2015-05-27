@@ -103,6 +103,11 @@ function draw(){
 
   // Update nodes    
   var node = svg.selectAll("g.person")
+      
+      // The function we are passing provides d3 with an id
+      // so that it can track when data is being added and removed.
+      // This is not necessary if the tree will only be drawn once
+      // as in the basic example.
       .data(nodes, function(person){ return person.id; });
       
   // Add any new nodes
@@ -137,6 +142,11 @@ function draw(){
 
   // Update links
   var link = svg.selectAll("path.link")
+  
+      // The function we are passing provides d3 with an id
+      // so that it can track when data is being added and removed.
+      // This is not necessary if the tree will only be drawn once
+      // as in the basic example.
       .data(links, function(d){ return d.target.id; });
   
   // Add new links    
