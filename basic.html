@@ -52,7 +52,8 @@ var tree = d3.layout.tree()
   // the available space.
   .nodeSize([100, 200])
   // By default, cousins are drawn further apart than siblings.
-  // By returning 1 below we draw cousins the same distance apart as siblings.
+  // By returning the same value in all cases, we draw cousins
+  // the same distance apart as siblings.
   .separation(function(){
     return .5;
   })
