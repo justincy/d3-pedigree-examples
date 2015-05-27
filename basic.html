@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.person rect {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1px;
+}
+
+.person {
+  font: 18px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+</style>
+<body>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script>
+
+var width = 1000,
+    height = 500;
+
+// Setup zoom and pan
+var zoom = d3.behavior.zoom()
+  .scaleExtent([.1,1])
+  .on('zoom', function(){
+    svg.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
+  })
+  // Offset so that first pan and zoom does not jump back to the origin
+  .translate([150, 200]);
+
+var svg = d3.select("body").append("svg")
+  .attr('width', width)
+  .attr('height', height)
+  .call(zoom)
+  .append('g')
+  // Left padding of tree; TODO: find a better way
+  .attr("transform", "translate(150,200)");
+
+var tree = d3.layout.tree()
+  .nodeSize([100, 300])
+  .separation(function(){
+    return 1;
+  });
+
+d3.json('family.json', function(error, json){
+  
+  if(error) {
+    return console.error(error);
+  }
+  
+  var nodes = tree.nodes(json),
+      links = tree.links(nodes);
+
+  // Style links (edges)
+  var link = svg.selectAll("path.link")
+      .data(links)
+    .enter().append("path")
+      .attr("class", "link")
+      .attr("d", elbow);
+
+  // Style nodes    
+  var node = svg.selectAll("g.node")
+      .data(nodes)
+    .enter().append("g")
+      .attr("class", "person")
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+
+  node.append("rect")
+      .attr({
+        x: -100,
+        y: -25,
+        width: 200,
+        height: 50
+      });
+
+  node.append("text")
+      .attr("dx", -90)
+      .attr("dy", 0)
+      .attr("text-anchor", "start")
+      .attr('class', 'name')
+      .text(function(d) { 
+        return d.name; 
+      });
+      
+});
+    
+function elbow(d, i) {
+  return "M" + d.source.y + "," + d.source.x
+    + "H" + (d.source.y + (d.target.y-d.source.y)/2)
+    + "V" + d.target.x 
+    + "H" + d.target.y;
+}
+
+</script>
