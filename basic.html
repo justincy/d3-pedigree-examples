@@ -23,9 +23,6 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script>
 
-var width = 1000,
-    height = 500;
-
 // Setup zoom and pan
 var zoom = d3.behavior.zoom()
   .scaleExtent([.1,1])
@@ -36,15 +33,23 @@ var zoom = d3.behavior.zoom()
   .translate([150, 200]);
 
 var svg = d3.select("body").append("svg")
-  .attr('width', width)
-  .attr('height', height)
+  .attr('width', 1000)
+  .attr('height', 500)
   .call(zoom)
   .append('g')
-  // Left padding of tree; TODO: find a better way
+  // Left padding of tree so that the whole root node is on the screen.
+  // TODO: find a better way
   .attr("transform", "translate(150,200)");
 
 var tree = d3.layout.tree()
+  // Using nodeSize we are able to control
+  // the separation between nodes. If we used
+  // the size parameter instead then d3 would
+  // calculate the separation dynamically to fill
+  // the available space.
   .nodeSize([100, 300])
+  // By default, cousins are drawn further apart than siblings.
+  // By returning 1 below we draw cousins the same distance apart as siblings.
   .separation(function(){
     return 1;
   });
@@ -59,7 +64,7 @@ d3.json('family.json', function(error, json){
       links = tree.links(nodes);
 
   // Style links (edges)
-  var link = svg.selectAll("path.link")
+  svg.selectAll("path.link")
       .data(links)
     .enter().append("path")
       .attr("class", "link")
@@ -70,8 +75,9 @@ d3.json('family.json', function(error, json){
       .data(nodes)
     .enter().append("g")
       .attr("class", "person")
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
+  // Draw the rectangle person boxes
   node.append("rect")
       .attr({
         x: -100,
@@ -80,6 +86,7 @@ d3.json('family.json', function(error, json){
         height: 50
       });
 
+  // Draw the person's name and position it inside the box
   node.append("text")
       .attr("dx", -90)
       .attr("dy", 0)
@@ -91,6 +98,9 @@ d3.json('family.json', function(error, json){
       
 });
     
+/**
+ * Custom path function that creates straight connecting lines.
+ */
 function elbow(d, i) {
   return "M" + d.source.y + "," + d.source.x
     + "H" + (d.source.y + (d.target.y-d.source.y)/2)
