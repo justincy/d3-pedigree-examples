@@ -63,7 +63,7 @@ var tree = d3.layout.tree()
     return person.parents;
   });
 
-d3.json('4gens.json', function(error, json){
+d3.json('data/4gens.json', function(error, json){
   
   if(error) {
     return console.error(error);
