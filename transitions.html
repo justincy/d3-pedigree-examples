@@ -24,10 +24,11 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script>
 
-var data;
+var root;
 
 var boxWidth = 150,
-    boxHeight = 40;
+    boxHeight = 40,
+    duration = 750; // duration of transitions in ms
 
 // Setup zoom and pan
 var zoom = d3.behavior.zoom()
@@ -90,16 +91,57 @@ d3.json('8gens.json', function(error, json){
     });
   });
   
-  data = json;
+  root = json;
   
-  draw();
+  root.x0 = 0;
+  root.y0 = 0;
+  
+  draw(root);
       
 });
 
-function draw(){
+function draw(source){
   
-  var nodes = tree.nodes(data),
+  var nodes = tree.nodes(root),
       links = tree.links(nodes);
+
+  // Update links
+  var link = svg.selectAll("path.link")
+  
+      // The function we are passing provides d3 with an id
+      // so that it can track when data is being added and removed.
+      // This is not necessary if the tree will only be drawn once
+      // as in the basic example.
+      .data(links, function(d){ return d.target.id; });
+  
+  // Add new links   
+  // Transition new links from the source's
+  // old position to the links final position
+  link.enter().append("path")
+      .attr("class", "link")
+      .attr("d", function(d) {
+        var o = {x: source.x0, y: (source.y0 + boxWidth/2)};
+        console.log(transitionElbow({source: o, target: o}));
+        return transitionElbow({source: o, target: o});
+      });
+    
+  // Update the old links positions
+  link.transition()
+      .duration(duration)
+      .attr("d", elbow);
+  
+  // Remove any links we don't need anymore
+  // if part of the tree was collapsed
+  // Transition exit links from their current position
+  // to the source's new position
+  link.exit()
+      .transition()
+      .duration(duration)
+      .attr("d", function(d) {
+        var o = {x: source.x, y: (source.y + boxWidth/2)};
+        return transitionElbow({source: o, target: o});
+      })
+      .remove();
 
   // Update nodes    
   var node = svg.selectAll("g.person")
@@ -113,52 +155,83 @@ function draw(){
   // Add any new nodes
   var nodeEnter = node.enter().append("g")
       .attr("class", "person")
+      
+      // Add new nodes at the right side of their child's box.
+      // They will be transitioned into their proper position.
+      .attr('transform', function(person){
+        return 'translate(' + (source.y0 + boxWidth/2) + ',' + source.x0 + ')';
+      })
       .on('click', togglePerson);
 
-  // Draw the rectangle person boxes
+  // Draw the rectangle person boxes.
+  // Start new boxes with 0 size so that
+  // we can transition them to their proper size.
   nodeEnter.append("rect")
+      .attr({
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+      });
+
+  // Draw the person's name and position it inside the box
+  nodeEnter.append("text")
+      .attr("dx", 0)
+      .attr("dy", 0)
+      .attr("text-anchor", "start")
+      .attr('class', 'name')
+      .text(function(d) { 
+        return d.name; 
+      })
+      .style('fill-opacity', 0);
+  
+  // Update the position of both old and new nodes
+  var nodeUpdate = node.transition()
+      .duration(duration)
+      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+      
+  // Grow boxes to their proper size    
+  nodeUpdate.select('rect')
       .attr({
         x: -(boxWidth/2),
         y: -(boxHeight/2),
         width: boxWidth,
         height: boxHeight
       });
-
-  // Draw the person's name and position it inside the box
-  nodeEnter.append("text")
-      .attr("dx", -(boxWidth/2) + 10)
-      .attr("dy", 0)
-      .attr("text-anchor", "start")
-      .attr('class', 'name')
-      .text(function(d) { 
-        return d.name; 
-      });
   
-  // Update the position of both old and new nodes
-  node.attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+  // Move text to it's proper position
+  nodeUpdate.select('text')
+      .attr("dx", -(boxWidth/2) + 10)
+      .style('fill-opacity', 1);
   
   // Remove nodes we aren't showing anymore
-  node.exit().remove();
-
-  // Update links
-  var link = svg.selectAll("path.link")
+  var nodeExit = node.exit()
+      .transition()
+      .duration(duration)
+      
+      // Transition exit nodes to the source's position
+      .attr("transform", function(d) { return "translate(" + (source.y + boxWidth/2) + "," + source.x + ")"; })
+      .remove();
   
-      // The function we are passing provides d3 with an id
-      // so that it can track when data is being added and removed.
-      // This is not necessary if the tree will only be drawn once
-      // as in the basic example.
-      .data(links, function(d){ return d.target.id; });
+  // Shrink boxes as we remove them    
+  nodeExit.select('rect')
+      .attr({
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0
+      });
+      
+  // Fade out the text as we remove it
+  nodeExit.select('text')
+      .style('fill-opacity', 0)
+      .attr('dx', 0);
   
-  // Add new links    
-  link.enter().append("path")
-      .attr("class", "link");
-  
-  // Remove any links we don't need anymore
-  // if part of the tree was collapsed
-  link.exit().remove();
-  
-  // Update the links positions (old and new)
-  link.attr("d", elbow);
+  // Stash the old positions for transition.
+  nodes.forEach(function(person) {
+    person.x0 = person.x;
+    person.y0 = person.y;
+  });
 }
 
 /**
@@ -170,7 +243,7 @@ function togglePerson(person){
   } else {
     collapse(person);
   }
-  draw();
+  draw(person);
 }
 
 /**
@@ -213,6 +286,19 @@ function elbow(d) {
     + "H" + (sourceY + (targetY-sourceY)/2)
     + "V" + targetX 
     + "H" + targetY;
+}
+
+/**
+ * Use a different elbow function for enter
+ * and exit nodes. It's difficult for me to
+ * explain why this is necessary which
+ * probably means I'm doing it wrong.
+ */
+function transitionElbow(d){
+  return "M" + d.source.y + "," + d.source.x
+    + "H" + d.source.y
+    + "V" + d.source.x 
+    + "H" + d.source.y;
 }
 
 </script>

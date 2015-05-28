@@ -110,7 +110,7 @@ d3.json('4gens.json', function(error, json){
 /**
  * Custom path function that creates straight connecting lines.
  */
-function elbow(d, i) {
+function elbow(d) {
   return "M" + d.source.y + "," + d.source.x
     + "H" + (d.source.y + (d.target.y-d.source.y)/2)
     + "V" + d.target.x 

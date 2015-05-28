@@ -8,3 +8,4 @@ advanced features, you won't have to become an expert in D3 just to draw a pedig
 
 * __[Basic](http://justincy.github.io/d3-pedigree-examples/basic.html)__: Load and display a basic pedigree.
 * __[Expand and Collapse](http://justincy.github.io/d3-pedigree-examples/expandable.html)__: Click on persons to expand and collapse the tree.
+* __[Smooth Transitions](http://justincy.github.io/d3-pedigree-examples/transitions.html)__: Changes are animated when the tree is expanded or collapsed.
