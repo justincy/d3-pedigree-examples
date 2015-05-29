@@ -33,7 +33,7 @@ svg {
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script>
 
-var root;
+var ancestorRoot, descendantRoot;
 
 var boxWidth = 150,
     boxHeight = 40,
@@ -56,9 +56,9 @@ var svg = d3.select("body").append("svg")
   
   // Left padding of tree so that the whole root node is on the screen.
   // TODO: find a better way
-  .attr("transform", "translate(150,200)");
+  .attr("transform", "translate(400,200)");
 
-var tree = d3.layout.tree()
+var ancestorsTree = d3.layout.tree()
   
   // Using nodeSize we are able to control
   // the separation between nodes. If we used
@@ -86,36 +86,73 @@ var tree = d3.layout.tree()
       return person._parents;
     }
   });
+  
+// Use a separate tree to display the descendants
+var descendantsTree = d3.layout.tree()
+  .nodeSize([100, 200])
+  .separation(function(){
+    return .5;
+  })
+  .children(function(person){
+    if(person.collapsed){
+      return;
+    } else {
+      return person._children;
+    }
+  });
 
 d3.json('data/8gens.json', function(error, json){
   
   if(error) {
     return console.error(error);
   }
+
+  // D3 modifies the objects by setting properties such as
+  // coordinates, parent, and children. Thus the same node
+  // node can't exist in two trees. But we need the root to
+  // be in both so we create proxy nodes for the root only.
+  ancestorRoot = rootProxy(json);
+  descendantRoot = rootProxy(json);
   
   // Start with only the first few generations showing
-  json._parents.forEach(function(gen2){
-    gen2._parents.forEach(function(gen3){
-      collapse(gen3);
-    });
+  ancestorRoot._parents.forEach(function(parents){
+    parents._parents.forEach(collapse);
   });
   
-  root = json;
+  descendantRoot._children.forEach(collapse);
   
-  root.x0 = 0;
-  root.y0 = 0;
-  
-  draw(root);
+  drawAncestors(ancestorRoot);
+  drawDescendants(descendantRoot);
       
 });
 
-function draw(source){
+function rootProxy(root){
+  return {
+    name: root.name,
+    id: root.id,
+    x0: 0,
+    y0: 0,
+    _children: root._children,
+    _parents: root._parents,
+    collapsed: false
+  };
+}
+
+function drawAncestors(source){
+  draw(source, ancestorsTree, ancestorRoot, 'ancestor', 1);
+}
+
+function drawDescendants(source){
+  draw(source, descendantsTree, descendantRoot, 'descendant', -1);
+}
+
+function draw(source, tree, root, displayClass, direction){
   
   var nodes = tree.nodes(root),
       links = tree.links(nodes);
 
   // Update links
-  var link = svg.selectAll("path.link")
+  var link = svg.selectAll("path.link." + displayClass)
   
       // The function we are passing provides d3 with an id
       // so that it can track when data is being added and removed.
@@ -127,16 +164,18 @@ function draw(source){
   // Transition new links from the source's
   // old position to the links final position
   link.enter().append("path")
-      .attr("class", "link")
+      .attr("class", "link " + displayClass)
       .attr("d", function(d) {
-        var o = {x: source.x0, y: (source.y0 + boxWidth/2)};
+        var o = {x: source.x0, y: direction * (source.y0 + boxWidth/2)};
         return transitionElbow({source: o, target: o});
       });
     
   // Update the old links positions
   link.transition()
       .duration(duration)
-      .attr("d", elbow);
+      .attr("d", function(d){
+        return elbow(d, direction);
+      });
   
   // Remove any links we don't need anymore
   // if part of the tree was collapsed
@@ -146,13 +185,13 @@ function draw(source){
       .transition()
       .duration(duration)
       .attr("d", function(d) {
-        var o = {x: source.x, y: (source.y + boxWidth/2)};
+        var o = {x: source.x, y: direction * (source.y + boxWidth/2)};
         return transitionElbow({source: o, target: o});
       })
       .remove();
 
   // Update nodes    
-  var node = svg.selectAll("g.person")
+  var node = svg.selectAll("g.person." + displayClass)
       
       // The function we are passing provides d3 with an id
       // so that it can track when data is being added and removed.
@@ -162,12 +201,12 @@ function draw(source){
       
   // Add any new nodes
   var nodeEnter = node.enter().append("g")
-      .attr("class", "person")
+      .attr("class", "person " + displayClass)
       
       // Add new nodes at the right side of their child's box.
       // They will be transitioned into their proper position.
       .attr('transform', function(person){
-        return 'translate(' + (source.y0 + boxWidth/2) + ',' + source.x0 + ')';
+        return 'translate(' + (direction * (source.y0 + boxWidth/2)) + ',' + source.x0 + ')';
       })
       .on('click', togglePerson);
 
@@ -196,7 +235,7 @@ function draw(source){
   // Update the position of both old and new nodes
   var nodeUpdate = node.transition()
       .duration(duration)
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+      .attr("transform", function(d) { return "translate(" + (direction * d.y) + "," + d.x + ")"; });
       
   // Grow boxes to their proper size    
   nodeUpdate.select('rect')
@@ -218,7 +257,7 @@ function draw(source){
       .duration(duration)
       
       // Transition exit nodes to the source's position
-      .attr("transform", function(d) { return "translate(" + (source.y + boxWidth/2) + "," + source.x + ")"; })
+      .attr("transform", function(d) { return "translate(" + (direction * (source.y + boxWidth/2)) + "," + source.x + ")"; })
       .remove();
   
   // Shrink boxes as we remove them    
@@ -251,7 +290,19 @@ function togglePerson(person){
   } else {
     collapse(person);
   }
-  draw(person);
+  
+  // Figure out which tree the person belongs too.
+  // We use two separate if statements to account
+  // for the root node that exists in both trees.
+  // Don't need to redraw when leaf nodes are
+  // toggled because they don't expand or collapse,
+  // therefore we don't account for them.
+  if(person._children){
+    drawDescendants(person);
+  }
+  if(person._parents){
+    drawAncestors(person);
+  }
 }
 
 /**
@@ -269,6 +320,9 @@ function collapse(person){
   if(person._parents){
     person._parents.forEach(collapse);
   }
+  if(person._children){
+    person._children.forEach(collapse);
+  }
 }
     
 /**
@@ -281,16 +335,16 @@ function collapse(person){
  * then we have to draw the links first and the
  * draw the boxes on top of them.
  */
-function elbow(d) {
+function elbow(d, direction) {
   var sourceX = d.source.x,
       sourceY = d.source.y + (boxWidth / 2),
       targetX = d.target.x,
       targetY = d.target.y - (boxWidth / 2);
       
-  return "M" + sourceY + "," + sourceX
-    + "H" + (sourceY + (targetY-sourceY)/2)
+  return "M" + (direction * sourceY) + "," + sourceX
+    + "H" + (direction * (sourceY + (targetY-sourceY)/2))
     + "V" + targetX 
-    + "H" + targetY;
+    + "H" + (direction * targetY);
 }
 
 /**

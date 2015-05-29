@@ -11,19 +11,49 @@ if(typeof generations === 'undefined'){
   process.exit();
 }
 
-generations = parseInt(generations) - 1;
+// Int format and descrement by one to account for first person
+generations = parseInt(generations, 10) - 1;
 
-console.log(JSON.stringify(generatePerson(generations), null, 2));
+var person = generatePerson();
+person._parents = [
+  generateParents(generations - 1),
+  generateParents(generations - 1)
+];
+person._children = [
+  generateChildren(generations - 1),
+  generateChildren(generations - 1),
+  generateChildren(generations - 1)
+];
 
-function generatePerson(generations){
-  var person = {
+// Print to stdout in formatted JSON
+console.log(JSON.stringify(person, null, 2));
+
+function generatePerson(){
+  return {
     name: chance.name(),
     id: chance.guid()
   };
+}
+
+function generateParents(generations){
+  var person = generatePerson();
   if(generations > 0){
-    person.parents = [];
-    person.parents.push(generatePerson(generations - 1));
-    person.parents.push(generatePerson(generations - 1));
+    person._parents = [
+      generateParents(generations - 1),
+      generateParents(generations - 1)
+    ];
   }
   return person;
-};
+}
+
+function generateChildren(generations){
+  var person = generatePerson();
+  if(generations > 0){
+    person._children = [
+      generateChildren(generations - 1),
+      generateChildren(generations - 1),
+      generateChildren(generations - 1)
+    ];
+  }
+  return person;
+}

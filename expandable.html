@@ -82,7 +82,7 @@ var tree = d3.layout.tree()
     if(person.collapsed){
       return;
     } else {
-      return person.parents;
+      return person._parents;
     }
   });
 
@@ -93,8 +93,8 @@ d3.json('data/8gens.json', function(error, json){
   }
   
   // Start with only the first few generations showing
-  json.parents.forEach(function(gen2){
-    gen2.parents.forEach(function(gen3){
+  json._parents.forEach(function(gen2){
+    gen2._parents.forEach(function(gen3){
       collapse(gen3);
     });
   });
@@ -194,8 +194,8 @@ function togglePerson(person){
  */
 function collapse(person){
   person.collapsed = true;
-  if(person.parents){
-    person.parents.forEach(collapse);
+  if(person._parents){
+    person._parents.forEach(collapse);
   }
 }
     

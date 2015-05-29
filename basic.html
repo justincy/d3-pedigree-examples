@@ -69,7 +69,7 @@ var tree = d3.layout.tree()
   // Tell d3 what the child nodes are. Remember, we're drawing
   // a tree so the ancestors are child nodes.
   .children(function(person){
-    return person.parents;
+    return person._parents;
   });
 
 d3.json('data/4gens.json', function(error, json){
