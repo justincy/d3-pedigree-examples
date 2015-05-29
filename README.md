@@ -22,7 +22,7 @@ My requirements were:
 * __[Basic](http://justincy.github.io/d3-pedigree-examples/basic.html)__: A basic static pedigree.
 * __[Expand and Collapse](http://justincy.github.io/d3-pedigree-examples/expandable.html)__: Click on persons to expand and collapse the tree.
 * __[Smooth Transitions](http://justincy.github.io/d3-pedigree-examples/transitions.html)__: Changes are animated when the tree is expanded or collapsed.
-* __[Bowtie](http://justincy.github.io/d3-pedigree-examples/transitions.html)__: Show both ancestors and descendants.
+* __[Ancestors and Descendants](http://justincy.github.io/d3-pedigree-examples/descendants.html)__: Show both ancestors and descendants.
 
 #### Notes
 
