@@ -285,23 +285,39 @@ function draw(source, tree, root, displayClass, direction){
  * Update a person's state when they are clicked.
  */
 function togglePerson(person){
-  if(person.collapsed){
-    person.collapsed = false;
-  } else {
-    collapse(person);
+  
+  // Figure out of the root node was clicked. Remember
+  // we have two proxy root nodes so we have handle both.
+  if(person === ancestorRoot || person === descendantRoot){
+    if(ancestorRoot.collapsed){
+      ancestorRoot.collapsed = false;
+      descendantRoot.collapsed = false;
+    } else {
+      collapse(ancestorRoot);
+      collapse(descendantRoot);
+    }
+    drawDescendants(descendantRoot);
+    drawAncestors(ancestorRoot);
   }
   
-  // Figure out which tree the person belongs too.
-  // We use two separate if statements to account
-  // for the root node that exists in both trees.
-  // Don't need to redraw when leaf nodes are
-  // toggled because they don't expand or collapse,
-  // therefore we don't account for them.
-  if(person._children){
-    drawDescendants(person);
-  }
-  if(person._parents){
-    drawAncestors(person);
+  // Non-root nodes
+  else {
+  
+    if(person.collapsed){
+      person.collapsed = false;
+    } else {
+      collapse(person);
+    }
+    
+    // Figure out which tree the person belongs too.
+    // Don't need to redraw when leaf nodes are
+    // toggled because they don't expand or collapse,
+    // therefore we don't account for them.
+    if(person._children){
+      drawDescendants(person);
+    } else if(person._parents){
+      drawAncestors(person);
+    }
   }
 }
 
