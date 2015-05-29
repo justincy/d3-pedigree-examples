@@ -22,6 +22,7 @@ My requirements were:
 * __[Basic](http://justincy.github.io/d3-pedigree-examples/basic.html)__: A basic static pedigree.
 * __[Expand and Collapse](http://justincy.github.io/d3-pedigree-examples/expandable.html)__: Click on persons to expand and collapse the tree.
 * __[Smooth Transitions](http://justincy.github.io/d3-pedigree-examples/transitions.html)__: Changes are animated when the tree is expanded or collapsed.
+* __[Bowtie](http://justincy.github.io/d3-pedigree-examples/transitions.html)__: Show both ancestors and descendants.
 
 #### Notes
 
@@ -39,3 +40,8 @@ My requirements were:
   
   To display descendants we swap the x and y then negate the x value which puts
   child nodes at the left.
+  
+* You have to draw two different trees in order to display both ancestors and
+  descendants which dramatically increases the complexity. I strongly suggest
+  an OOP approach if you need to do that. As you can see in the source code, it
+  gets pretty hairy otherwise.
