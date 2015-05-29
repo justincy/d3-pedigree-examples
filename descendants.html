@@ -46,7 +46,7 @@ var zoom = d3.behavior.zoom()
     svg.attr("transform", "translate(" + d3.event.translate + ") scale(" + d3.event.scale + ")");
   })
   // Offset so that first pan and zoom does not jump back to the origin
-  .translate([150, 200]);
+  .translate([400, 200]);
 
 var svg = d3.select("body").append("svg")
   .attr('width', 1000)
