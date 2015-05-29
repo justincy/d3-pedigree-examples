@@ -23,4 +23,19 @@ My requirements were:
 * __[Expand and Collapse](http://justincy.github.io/d3-pedigree-examples/expandable.html)__: Click on persons to expand and collapse the tree.
 * __[Smooth Transitions](http://justincy.github.io/d3-pedigree-examples/transitions.html)__: Changes are animated when the tree is expanded or collapsed.
 
-Pan and zoom via the mouse are enabled in all examples.
+#### Notes
+
+* Pan and zoom via the mouse are enabled in all examples.
+
+* D3 tree layouts are configured for top -> bottom displays. We want a left -> right
+  display so the x and y coordinates are flipped for nodes and links only. This is
+  made even more complicated by svg using screen coordinates instead of cartesian
+  coordinates.
+
+  Say D3 calculates that a root node will be displayed at `(10,10)` with a child
+  below it at `(10,20)`. We switch the x and y which leaves the root at `(10,10)`
+  but moves the child to `(20,10)` which is now to the right. This gives us the
+  traditional left to right ancestral pedigree view.
+  
+  To display descendants we swap the x and y then negate the x value which puts
+  child nodes at the left.

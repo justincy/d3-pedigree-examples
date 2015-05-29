@@ -273,19 +273,16 @@ function collapse(person){
 }
     
 /**
- * Custom path function that creates straight connecting lines.
+ * Custom path function that creates straight connecting
+ * lines. Calculate start and end position of links.
+ * Instead of drawing to the center of the node,
+ * draw to the border of the person profile box.
+ * That way drawing order doesn't matter. In other
+ * words, if we draw to the center of the node
+ * then we have to draw the links first and the
+ * draw the boxes on top of them.
  */
 function elbow(d) {
-  
-  // Calculate start and end position of links.
-  // Instead of drawing to the center of the node,
-  // draw to the border of the person profile box.
-  // That way drawing order doesn't matter. In other
-  // words, if we draw to the center of the node
-  // then we have to draw the links first and the
-  // draw the boxes on top of them.
-  // And for some reason the x and y are flipped,
-  // I don't know why.
   var sourceX = d.source.x,
       sourceY = d.source.y + (boxWidth / 2),
       targetX = d.target.x,
@@ -299,9 +296,9 @@ function elbow(d) {
 
 /**
  * Use a different elbow function for enter
- * and exit nodes. It's difficult for me to
- * explain why this is necessary which
- * probably means I'm doing it wrong.
+ * and exit nodes. This is necessary because
+ * the function above assumes that the nodes
+ * are stationary along the x axis.
  */
 function transitionElbow(d){
   return "M" + d.source.y + "," + d.source.x

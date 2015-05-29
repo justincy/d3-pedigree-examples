@@ -201,18 +201,15 @@ function collapse(person){
     
 /**
  * Custom path function that creates straight connecting lines.
+ * Calculate start and end position of links.
+ * Instead of drawing to the center of the node,
+ * draw to the border of the person profile box.
+ * That way drawing order doesn't matter. In other
+ * words, if we draw to the center of the node
+ * then we have to draw the links first and the
+ * draw the boxes on top of them.
  */
 function elbow(d) {
-  
-  // Calculate start and end position of links.
-  // Instead of drawing to the center of the node,
-  // draw to the border of the person profile box.
-  // That way drawing order doesn't matter. In other
-  // words, if we draw to the center of the node
-  // then we have to draw the links first and the
-  // draw the boxes on top of them.
-  // And for some reason the x and y are flipped,
-  // I don't know why.
   var sourceX = d.source.x,
       sourceY = d.source.y + (boxWidth / 2),
       targetX = d.target.x,
