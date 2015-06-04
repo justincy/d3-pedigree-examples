@@ -23,10 +23,15 @@ My requirements were:
 * __[Expand and Collapse](http://justincy.github.io/d3-pedigree-examples/expandable.html)__: Click on persons to expand and collapse the tree.
 * __[Smooth Transitions](http://justincy.github.io/d3-pedigree-examples/transitions.html)__: Changes are animated when the tree is expanded or collapsed.
 * __[Ancestors and Descendants](http://justincy.github.io/d3-pedigree-examples/descendants.html)__: Show both ancestors and descendants.
+* __[Ancestors and Descendants - OOP](http://justincy.github.io/d3-pedigree-examples/descendants-oop.html)__: A more sane example of ancestors and descendants using classes.
 
 #### Notes
 
 * Pan and zoom via the mouse are enabled in all examples.
+
+* In the code you'll often see the variable `d` as the only parameter of an
+  anonymous function. `d` is a D3 convention that stands for 
+  [data](https://github.com/mbostock/d3/wiki/Selections#data).
 
 * D3 tree layouts are configured for top -> bottom displays. We want a left -> right
   display so the x and y coordinates are flipped for nodes and links only. This is
