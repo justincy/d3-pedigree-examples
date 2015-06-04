@@ -45,3 +45,13 @@ My requirements were:
   descendants which dramatically increases the complexity. I strongly suggest
   an OOP approach if you need to do that. As you can see in the source code, it
   gets pretty hairy otherwise.
+
+* Display formatted text in SVG can be a pain because you have little control.
+  For example, there is no built-in way to do text-wrapping. You also can't easily
+  style one word or phrase in a sentence. To get around these limitations you
+  could use a [`foreignObject`](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject)
+  to display HTML and have all the formatting tools of CSS. However, `foreignObject`
+  is not supported by any version of IE (11 is the latest at the time of writing).
+  If you need to support any version of IE then you need to stick with pure SVG.
+  Since we're using D3 we can use the handy [D3plus](http://d3plus.org/) library
+  to help with [text wrapping](https://github.com/alexandersimoes/d3plus/wiki/Text%20Wrapping).
