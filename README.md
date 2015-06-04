@@ -47,7 +47,7 @@ My requirements were:
   gets pretty hairy otherwise.
 
 * Display formatted text in SVG can be a pain because you have little control.
-  For example, there is no built-in way to do text-wrapping. You also can't easily
+  For example, there is no built-in way to do text wrapping. You also can't easily
   style one word or phrase in a sentence. To get around these limitations you
   could use a [`foreignObject`](https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject)
   to display HTML and have all the formatting tools of CSS. However, `foreignObject`
