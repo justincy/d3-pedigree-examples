@@ -108,20 +108,21 @@ d3.json('data/4gensLongNames.json', function(error, json){
 
   // Draw the person's name and position it inside the box
   node.append("text")
-      .attr("dx", -(boxWidth/2) + 10)
-      .attr("dy", 0)
       .attr("text-anchor", "start")
       .attr('class', 'name')
       .text(function(d) { 
         return d.name; 
       });
 
-  // Text wrap on all nodes using d3plus
+  // Text wrap on all nodes using d3plus. By default there is not any left or
+  // right padding. To add padding we would need to draw another rectangle,
+  // inside of the rectangle with the border, that represents the area we would
+  // like the text to be contained in.
   d3.selectAll("text").each(function (d, i) {
-            d3plus.textwrap()
-                  .container(d3.select(this))
-                  .valign("middle")
-                  .draw();
+    d3plus.textwrap()
+          .container(d3.select(this))
+          .valign("middle")
+          .draw();
   });
       
 });
