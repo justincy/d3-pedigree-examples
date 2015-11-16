@@ -20,6 +20,7 @@ My requirements were:
 ### Examples
 
 * __[Basic](http://justincy.github.io/d3-pedigree-examples/basic.html)__: A basic static pedigree.
+* __[Text Warp](http://ilbonte.github.io/d3-pedigree-examples/basic-long-names.html)__: A basic static pedigree with text warp using [d3plus](https://github.com/alexandersimoes/d3plus).
 * __[Expand and Collapse](http://justincy.github.io/d3-pedigree-examples/expandable.html)__: Click on persons to expand and collapse the tree.
 * __[Smooth Transitions](http://justincy.github.io/d3-pedigree-examples/transitions.html)__: Changes are animated when the tree is expanded or collapsed.
 * __[Ancestors and Descendants](http://justincy.github.io/d3-pedigree-examples/descendants.html)__: Show both ancestors and descendants.
@@ -60,6 +61,7 @@ My requirements were:
   If you need to support any version of IE then you need to stick with pure SVG.
   Since we're using D3 we can use the handy [D3plus](http://d3plus.org/) library
   to help with [text wrapping](https://github.com/alexandersimoes/d3plus/wiki/Text%20Wrapping).
+  See[ this ](http://ilbonte.github.io/d3-pedigree-examples/basic-long-names.html) example
 
 * D3 does not handle [pedigree collapse](https://en.wikipedia.org/wiki/Pedigree_collapse) well.
   D3 trees are designed to only ever branch out; there is no built-in mechanism for allowing the
