@@ -65,19 +65,18 @@ My requirements were:
 
 * D3 does not handle [pedigree collapse](https://en.wikipedia.org/wiki/Pedigree_collapse) well.
   D3 trees are designed to only ever branch out; there is no built-in mechanism for allowing the
-  tree to collapse. There are two options for handling this ourself:
+  tree to collapse. Here are some options for handling this ourself:
 
   1. Duplicate common ancestor nodes instead of collapsing the pedigree. This is only
      feasible if you don't use a dynamic tree. When D3 processes updates to a dynamic
      tree, it relies on all nodes having a unique ID. So to make this work with a dynamic
      tree you would need to generate unique IDs for each duplicated person in the pedigree.
-     This _is_ possible, but it will be a pain.
 
   2. Allow the pedigree to collapse by only displaying a common ancestor once. We will
-     let D3 draw the first connection then draw all other connections manually. Again,
-     this is not trivial, especially if you want to have a dynamic tree. There is an
-     [example](http://bl.ocks.org/robschmuecker/6afc2ecb05b191359862) of this. It's not
-     a solution that scales well.
+     let D3 draw the first connection then draw all other connections manually.
+     This is not trivial, especially if you want to have a dynamic tree. There is an
+     [example](http://bl.ocks.org/robschmuecker/6afc2ecb05b191359862) of this. It doesn't
+     appear to be a solution that scales well.
 
   3. Try using [dagre](https://github.com/cpettitt/dagre), a library desgigned for rendering
      [DAGs](https://en.wikipedia.org/wiki/Directed_acyclic_graph). There is an add-on available
