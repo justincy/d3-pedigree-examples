@@ -1,6 +1,6 @@
 # d3-pedigree-examples
 
-Examples of how to create traditionally styled family pedigrees with [D3](http://d3js.org/). 
+Examples of how to create traditionally styled family pedigrees with [D3](http://d3js.org/) v3. 
 
 When I started learning how to draw pedigrees with D3, I had difficulty mixing and 
 matching techniques from different examples and separating the basics from the fancy 
